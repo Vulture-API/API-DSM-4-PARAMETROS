@@ -9,7 +9,8 @@ import {
 } from "fastify-type-provider-zod";
 
 import { handleError } from "@/errors/error-handler.js";
-import { userRoutes } from "@/modules/example-users/routes/users.route.js";
+import { sensorTypeRoutes } from "@/modules/sensor-types/routes/sensor-types.route.js";
+import { sensorRoutes } from "@/modules/sensors/routes/sensors.route.js";
 
 export function buildApp() {
   const app = Fastify({
@@ -21,7 +22,14 @@ export function buildApp() {
   app.setErrorHandler(handleError);
 
   app.register(cookie);
-  app.register(userRoutes, { prefix: "/api/users" });
+
+  // Rotas conforme OpenAPI 1.3.0
+  app.register(sensorTypeRoutes, { prefix: "/sensor-types" });
+  app.register(sensorRoutes, { prefix: "/sensors" });
+
+  // Prefixo /v1 conforme servers.url
+  app.register(sensorTypeRoutes, { prefix: "/v1/sensor-types" });
+  app.register(sensorRoutes, { prefix: "/v1/sensors" });
 
   return app;
 }
