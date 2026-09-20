@@ -23,13 +23,36 @@ export function buildApp() {
 
   app.register(cookie);
 
-  // Rotas conforme OpenAPI 1.3.0
   app.register(sensorTypeRoutes, { prefix: "/sensor-types" });
   app.register(sensorRoutes, { prefix: "/sensors" });
 
-  // Prefixo /v1 conforme servers.url
   app.register(sensorTypeRoutes, { prefix: "/v1/sensor-types" });
   app.register(sensorRoutes, { prefix: "/v1/sensors" });
+
+  app.register(sensorTypeRoutes, { prefix: "/api/sensor-types" });
+  app.register(sensorRoutes, { prefix: "/api/sensors" });
+
+  app.register(sensorTypeRoutes, { prefix: "/api/v1/sensor-types" });
+  app.register(sensorRoutes, { prefix: "/api/v1/sensors" });
+
+  app.get("/", async (_request, reply) => {
+    return reply.status(200).send({
+      name: "AgriTech - Parameters & Sensors Service",
+      status: "ok",
+    });
+  });
+
+  app.get("/health", async (_request, reply) => {
+    return reply.status(200).send({
+      status: "healthy",
+    });
+  });
+
+  app.get("/api/v1/health", async (_request, reply) => {
+    return reply.status(200).send({
+      status: "healthy",
+    });
+  });
 
   return app;
 }
