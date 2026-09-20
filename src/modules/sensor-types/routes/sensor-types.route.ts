@@ -10,8 +10,12 @@ import { GetSensorTypeService } from "@/modules/sensor-types/services/get-sensor
 import { ListSensorTypesService } from "@/modules/sensor-types/services/list-sensor-types.service.js";
 import { UpdateSensorTypeService } from "@/modules/sensor-types/services/update-sensor-type.service.js";
 
-export const sensorTypeRoutes: FastifyPluginAsyncZod = async (app) => {
-  const sensorTypeRepository = new SensorTypeRepository();
+export interface SensorTypeRouteOptions {
+  repository?: SensorTypeRepository;
+}
+
+export const sensorTypeRoutes: FastifyPluginAsyncZod<SensorTypeRouteOptions> = async (app, opts) => {
+  const sensorTypeRepository = opts.repository ?? new SensorTypeRepository();
   const createSensorTypeService = new CreateSensorTypeService(sensorTypeRepository);
   const listSensorTypesService = new ListSensorTypesService(sensorTypeRepository);
   const getSensorTypeService = new GetSensorTypeService(sensorTypeRepository);

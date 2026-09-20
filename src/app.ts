@@ -9,7 +9,9 @@ import {
 } from "fastify-type-provider-zod";
 
 import { handleError } from "@/errors/error-handler.js";
+import { SensorTypeRepository } from "@/modules/sensor-types/repositories/sensor-type.repository.js";
 import { sensorTypeRoutes } from "@/modules/sensor-types/routes/sensor-types.route.js";
+import { SensorRepository } from "@/modules/sensors/repositories/sensor.repository.js";
 import { sensorRoutes } from "@/modules/sensors/routes/sensors.route.js";
 
 export function buildApp() {
@@ -23,17 +25,20 @@ export function buildApp() {
 
   app.register(cookie);
 
-  app.register(sensorTypeRoutes, { prefix: "/sensor-types" });
-  app.register(sensorRoutes, { prefix: "/sensors" });
+  const sensorTypeRepository = new SensorTypeRepository();
+  const sensorRepository = new SensorRepository();
 
-  app.register(sensorTypeRoutes, { prefix: "/v1/sensor-types" });
-  app.register(sensorRoutes, { prefix: "/v1/sensors" });
+  app.register(sensorTypeRoutes, { prefix: "/sensor-types", repository: sensorTypeRepository });
+  app.register(sensorRoutes, { prefix: "/sensors", repository: sensorRepository });
 
-  app.register(sensorTypeRoutes, { prefix: "/api/sensor-types" });
-  app.register(sensorRoutes, { prefix: "/api/sensors" });
+  app.register(sensorTypeRoutes, { prefix: "/v1/sensor-types", repository: sensorTypeRepository });
+  app.register(sensorRoutes, { prefix: "/v1/sensors", repository: sensorRepository });
 
-  app.register(sensorTypeRoutes, { prefix: "/api/v1/sensor-types" });
-  app.register(sensorRoutes, { prefix: "/api/v1/sensors" });
+  app.register(sensorTypeRoutes, { prefix: "/api/sensor-types", repository: sensorTypeRepository });
+  app.register(sensorRoutes, { prefix: "/api/sensors", repository: sensorRepository });
+
+  app.register(sensorTypeRoutes, { prefix: "/api/v1/sensor-types", repository: sensorTypeRepository });
+  app.register(sensorRoutes, { prefix: "/api/v1/sensors", repository: sensorRepository });
 
   app.get("/", async (_request, reply) => {
     return reply.status(200).send({

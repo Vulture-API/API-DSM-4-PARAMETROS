@@ -11,8 +11,12 @@ import { GetSensorService } from "@/modules/sensors/services/get-sensor.service.
 import { ListSensorsService } from "@/modules/sensors/services/list-sensors.service.js";
 import { UpdateSensorService } from "@/modules/sensors/services/update-sensor.service.js";
 
-export const sensorRoutes: FastifyPluginAsyncZod = async (app) => {
-  const sensorRepository = new SensorRepository();
+export interface SensorRouteOptions {
+  repository?: SensorRepository;
+}
+
+export const sensorRoutes: FastifyPluginAsyncZod<SensorRouteOptions> = async (app, opts) => {
+  const sensorRepository = opts.repository ?? new SensorRepository();
   const createSensorService = new CreateSensorService(sensorRepository);
   const listSensorsService = new ListSensorsService(sensorRepository);
   const getSensorService = new GetSensorService(sensorRepository);
