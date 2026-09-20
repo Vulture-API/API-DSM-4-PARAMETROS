@@ -4,7 +4,6 @@ import {
   type FastifyRequest,
 } from "fastify";
 
-import { env } from "@/config/environment.js";
 import { ApplicationError } from "@/errors/application.error.js";
 
 export function handleError(
@@ -12,37 +11,29 @@ export function handleError(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  request.log.error(error);
-
-  const developmentDetails =
-    env.NODE_ENV === "development" ? { developmentError: error } : {};
-
-  // Erros encontrados nas validações das rotas feitas pelo Fastify com Zod.
   if (error.validation) {
+    const details = error.validation.map(
+      (v) => `${v.instancePath || "field"}: ${v.message}`,
+    );
+
     return reply.status(400).send({
-      statusCode: 400,
-      code: "VALIDATION_ERROR",
-      message: "Invalid data",
-      errors: error.validation,
-      ...developmentDetails,
+      code: 400,
+      message: "Bad request - validation error",
+      details,
     });
   }
 
-  // Erros conhecidos da aplicação.
   if (error instanceof ApplicationError) {
     return reply.status(error.statusCode).send({
-      statusCode: error.statusCode,
-      code: error.code,
+      code: error.statusCode,
       message: error.message,
-      ...developmentDetails,
+      details: error.details,
     });
   }
 
-  // Erros não tratados.
   return reply.status(500).send({
-    statusCode: 500,
-    code: "INTERNAL_SERVER_ERROR",
+    code: 500,
     message: "Internal server error",
-    ...developmentDetails,
+    details: [],
   });
 }

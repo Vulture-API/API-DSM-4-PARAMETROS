@@ -1,14 +1,13 @@
-// Classe base para erros tratados pelo servidor.
-// Erros que estendem esta classe são tratados automaticamente pelo tratador de erros.
-
 export class ApplicationError extends Error {
   public statusCode: number;
-  public code: string;
+  public code: number;
+  public details: string[];
 
-  constructor(statusCode: number, code: string, message: string) {
+  constructor(statusCode: number, message: string, details: string[] = []) {
     super(message);
     this.statusCode = statusCode;
-    this.code = code;
+    this.code = statusCode;
+    this.details = details;
     this.name = "ApplicationError";
   }
 }
