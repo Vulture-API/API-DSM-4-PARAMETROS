@@ -15,7 +15,10 @@ export interface SensorRouteOptions {
   repository?: SensorRepository;
 }
 
-export const sensorRoutes: FastifyPluginAsyncZod<SensorRouteOptions> = async (app, opts) => {
+export const sensorRoutes: FastifyPluginAsyncZod<SensorRouteOptions> = async (
+  app,
+  opts,
+) => {
   const sensorRepository = opts.repository ?? new SensorRepository();
   const createSensorService = new CreateSensorService(sensorRepository);
   const listSensorsService = new ListSensorsService(sensorRepository);

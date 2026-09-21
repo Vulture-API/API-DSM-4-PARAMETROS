@@ -32,7 +32,9 @@ export class SensorRepository {
     return sensor;
   }
 
-  async findPaginated(filter?: SensorFilter | undefined): Promise<PaginatedResult<Sensor>> {
+  async findPaginated(
+    filter?: SensorFilter | undefined,
+  ): Promise<PaginatedResult<Sensor>> {
     const page = filter?.page ?? 1;
     const limit = filter?.limit ?? 20;
 
