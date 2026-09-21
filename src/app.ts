@@ -28,17 +28,41 @@ export function buildApp() {
   const sensorTypeRepository = new SensorTypeRepository();
   const sensorRepository = new SensorRepository();
 
-  app.register(sensorTypeRoutes, { prefix: "/sensor-types", repository: sensorTypeRepository });
-  app.register(sensorRoutes, { prefix: "/sensors", repository: sensorRepository });
+  app.register(sensorTypeRoutes, {
+    prefix: "/sensor-types",
+    repository: sensorTypeRepository,
+  });
+  app.register(sensorRoutes, {
+    prefix: "/sensors",
+    repository: sensorRepository,
+  });
 
-  app.register(sensorTypeRoutes, { prefix: "/v1/sensor-types", repository: sensorTypeRepository });
-  app.register(sensorRoutes, { prefix: "/v1/sensors", repository: sensorRepository });
+  app.register(sensorTypeRoutes, {
+    prefix: "/v1/sensor-types",
+    repository: sensorTypeRepository,
+  });
+  app.register(sensorRoutes, {
+    prefix: "/v1/sensors",
+    repository: sensorRepository,
+  });
 
-  app.register(sensorTypeRoutes, { prefix: "/api/sensor-types", repository: sensorTypeRepository });
-  app.register(sensorRoutes, { prefix: "/api/sensors", repository: sensorRepository });
+  app.register(sensorTypeRoutes, {
+    prefix: "/api/sensor-types",
+    repository: sensorTypeRepository,
+  });
+  app.register(sensorRoutes, {
+    prefix: "/api/sensors",
+    repository: sensorRepository,
+  });
 
-  app.register(sensorTypeRoutes, { prefix: "/api/v1/sensor-types", repository: sensorTypeRepository });
-  app.register(sensorRoutes, { prefix: "/api/v1/sensors", repository: sensorRepository });
+  app.register(sensorTypeRoutes, {
+    prefix: "/api/v1/sensor-types",
+    repository: sensorTypeRepository,
+  });
+  app.register(sensorRoutes, {
+    prefix: "/api/v1/sensors",
+    repository: sensorRepository,
+  });
 
   app.get("/", async (_request, reply) => {
     return reply.status(200).send({
