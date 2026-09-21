@@ -14,13 +14,23 @@ export interface SensorTypeRouteOptions {
   repository?: SensorTypeRepository;
 }
 
-export const sensorTypeRoutes: FastifyPluginAsyncZod<SensorTypeRouteOptions> = async (app, opts) => {
+export const sensorTypeRoutes: FastifyPluginAsyncZod<
+  SensorTypeRouteOptions
+> = async (app, opts) => {
   const sensorTypeRepository = opts.repository ?? new SensorTypeRepository();
-  const createSensorTypeService = new CreateSensorTypeService(sensorTypeRepository);
-  const listSensorTypesService = new ListSensorTypesService(sensorTypeRepository);
+  const createSensorTypeService = new CreateSensorTypeService(
+    sensorTypeRepository,
+  );
+  const listSensorTypesService = new ListSensorTypesService(
+    sensorTypeRepository,
+  );
   const getSensorTypeService = new GetSensorTypeService(sensorTypeRepository);
-  const updateSensorTypeService = new UpdateSensorTypeService(sensorTypeRepository);
-  const deleteSensorTypeService = new DeleteSensorTypeService(sensorTypeRepository);
+  const updateSensorTypeService = new UpdateSensorTypeService(
+    sensorTypeRepository,
+  );
+  const deleteSensorTypeService = new DeleteSensorTypeService(
+    sensorTypeRepository,
+  );
 
   const controller = new SensorTypeController(
     createSensorTypeService,

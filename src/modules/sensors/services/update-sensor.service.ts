@@ -14,7 +14,8 @@ export class UpdateSensorService {
     }
 
     const targetStation = input.station_id ?? existing.station_id;
-    const targetIdentifier = input.local_identifier ?? existing.local_identifier;
+    const targetIdentifier =
+      input.local_identifier ?? existing.local_identifier;
 
     const conflict = await this.sensorRepository.findByStationAndIdentifier(
       targetStation,
