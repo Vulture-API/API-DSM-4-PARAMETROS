@@ -33,7 +33,10 @@ export class SensorTypeRepository {
     return found ? { ...found } : null;
   }
 
-  async update(id: number, data: Partial<Omit<SensorType, "id">>): Promise<SensorType | null> {
+  async update(
+    id: number,
+    data: Partial<Omit<SensorType, "id">>,
+  ): Promise<SensorType | null> {
     const index = this.sensorTypes.findIndex((item) => item.id === id);
     if (index === -1) {
       return null;

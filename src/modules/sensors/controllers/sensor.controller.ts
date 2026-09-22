@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+
 import type { IdPath } from "@/common/pagination.schema.js";
 import type { ListSensorsQuery } from "@/modules/sensors/schemas/list-sensors-query.schema.js";
 import type { SensorInput } from "@/modules/sensors/schemas/sensor-input.schema.js";
