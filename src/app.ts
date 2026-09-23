@@ -11,9 +11,9 @@ import {
 import { database } from "@/config/database.js";
 import { handleError } from "@/errors/error-handler.js";
 import {
-  type SensorTypeRepository,
   InMemorySensorTypeRepository,
   PgSensorTypeRepository,
+  type SensorTypeRepository,
 } from "@/modules/sensor-types/repositories/sensor-type.repository.js";
 import { sensorTypeRoutes } from "@/modules/sensor-types/routes/sensor-types.route.js";
 import { SensorRepository } from "@/modules/sensors/repositories/sensor.repository.js";
