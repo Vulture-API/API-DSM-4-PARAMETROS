@@ -5,7 +5,9 @@ import type { SensorTypeRepository } from "@/modules/sensor-types/repositories/s
 export class DeleteSensorTypeService {
   constructor(
     private readonly sensorTypeRepository: SensorTypeRepository,
-    private readonly checkSensorAssociation?: (sensorTypeId: number) => Promise<boolean>,
+    private readonly checkSensorAssociation?: (
+      sensorTypeId: number,
+    ) => Promise<boolean>,
   ) {}
 
   async execute(id: number): Promise<void> {

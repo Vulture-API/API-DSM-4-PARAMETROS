@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+
 import type { IdPath } from "@/common/pagination.schema.js";
 import type { SensorTypeInput } from "@/modules/sensor-types/schemas/sensor-type-input.schema.js";
 import type { CreateSensorTypeService } from "@/modules/sensor-types/services/create-sensor-type.service.js";
