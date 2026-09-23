@@ -11,9 +11,9 @@ import {
 import { database } from "@/config/database.js";
 import { handleError } from "@/errors/error-handler.js";
 import {
-  type SensorTypeRepository,
   InMemorySensorTypeRepository,
   PgSensorTypeRepository,
+  type SensorTypeRepository,
 } from "@/modules/sensor-types/repositories/sensor-type.repository.js";
 import { sensorTypeRoutes } from "@/modules/sensor-types/routes/sensor-types.route.js";
 import { SensorRepository } from "@/modules/sensors/repositories/sensor.repository.js";
@@ -35,7 +35,10 @@ export function buildApp(options: BuildAppOptions = {}) {
 
   app.addHook("onRequest", async (request, reply) => {
     reply.header("Access-Control-Allow-Origin", "*");
-    reply.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    reply.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS",
+    );
     reply.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
     if (request.method === "OPTIONS") {
       return reply.status(204).send();
