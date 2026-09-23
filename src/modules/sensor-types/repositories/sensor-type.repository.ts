@@ -1,6 +1,18 @@
+import type { Pool } from "pg";
+
+import { database } from "@/config/database.js";
 import type { SensorType } from "@/modules/sensor-types/types/sensor-type.type.js";
 
-export class SensorTypeRepository {
+export interface SensorTypeRepository {
+  create(data: Omit<SensorType, "id">): Promise<SensorType>;
+  findAll(): Promise<SensorType[]>;
+  findById(id: number): Promise<SensorType | null>;
+  findByName(name: string): Promise<SensorType | null>;
+  update(id: number, data: Partial<Omit<SensorType, "id">>): Promise<SensorType | null>;
+  delete(id: number): Promise<boolean>;
+}
+
+export class InMemorySensorTypeRepository implements SensorTypeRepository {
   private readonly sensorTypes: SensorType[] = [];
   private nextId = 1;
 
@@ -65,3 +77,124 @@ export class SensorTypeRepository {
     return true;
   }
 }
+
+export class PgSensorTypeRepository implements SensorTypeRepository {
+  private tableChecked = false;
+
+  constructor(private readonly pool: Pool = database) {}
+
+  private async ensureTable(): Promise<void> {
+    if (this.tableChecked) return;
+    try {
+      await this.pool.query(`
+        CREATE TABLE IF NOT EXISTS sensor_types (
+          id SERIAL PRIMARY KEY,
+          name VARCHAR(50) NOT NULL UNIQUE,
+          unit_of_measure VARCHAR(20) NOT NULL,
+          factor NUMERIC(10,2),
+          gain NUMERIC(10,2)
+        );
+      `);
+      this.tableChecked = true;
+    } catch {
+      this.tableChecked = true;
+    }
+  }
+
+  async create(data: Omit<SensorType, "id">): Promise<SensorType> {
+    await this.ensureTable();
+    const result = await this.pool.query<SensorType>(
+      `
+        INSERT INTO sensor_types (name, unit_of_measure, factor, gain)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, name, unit_of_measure, factor::float8 AS factor, gain::float8 AS gain
+      `,
+      [data.name, data.unit_of_measure, data.factor ?? null, data.gain ?? null],
+    );
+
+    return result.rows[0]!;
+  }
+
+  async findAll(): Promise<SensorType[]> {
+    await this.ensureTable();
+    const result = await this.pool.query<SensorType>(
+      `
+        SELECT id, name, unit_of_measure, factor::float8 AS factor, gain::float8 AS gain
+        FROM sensor_types
+        ORDER BY id ASC
+      `,
+    );
+
+    return result.rows;
+  }
+
+  async findById(id: number): Promise<SensorType | null> {
+    await this.ensureTable();
+    const result = await this.pool.query<SensorType>(
+      `
+        SELECT id, name, unit_of_measure, factor::float8 AS factor, gain::float8 AS gain
+        FROM sensor_types
+        WHERE id = $1
+      `,
+      [id],
+    );
+
+    return result.rows[0] ?? null;
+  }
+
+  async findByName(name: string): Promise<SensorType | null> {
+    await this.ensureTable();
+    const result = await this.pool.query<SensorType>(
+      `
+        SELECT id, name, unit_of_measure, factor::float8 AS factor, gain::float8 AS gain
+        FROM sensor_types
+        WHERE LOWER(name) = LOWER($1)
+      `,
+      [name],
+    );
+
+    return result.rows[0] ?? null;
+  }
+
+  async update(id: number, data: Partial<Omit<SensorType, "id">>): Promise<SensorType | null> {
+    await this.ensureTable();
+    const existing = await this.findById(id);
+    if (!existing) {
+      return null;
+    }
+
+    const name = data.name ?? existing.name;
+    const unitOfMeasure = data.unit_of_measure ?? existing.unit_of_measure;
+    const factor = data.factor !== undefined ? data.factor : existing.factor;
+    const gain = data.gain !== undefined ? data.gain : existing.gain;
+
+    const result = await this.pool.query<SensorType>(
+      `
+        UPDATE sensor_types
+        SET name = $2,
+            unit_of_measure = $3,
+            factor = $4,
+            gain = $5
+        WHERE id = $1
+        RETURNING id, name, unit_of_measure, factor::float8 AS factor, gain::float8 AS gain
+      `,
+      [id, name, unitOfMeasure, factor, gain],
+    );
+
+    return result.rows[0] ?? null;
+  }
+
+  async delete(id: number): Promise<boolean> {
+    await this.ensureTable();
+    const result = await this.pool.query(
+      `DELETE FROM sensor_types WHERE id = $1`,
+      [id],
+    );
+
+    return (result.rowCount ?? 0) > 0;
+  }
+}
+
+/** Fallback compatível para construtor direto */
+export const SensorTypeRepository = InMemorySensorTypeRepository;
+

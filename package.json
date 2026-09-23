@@ -1,5 +1,5 @@
 {
-  "name": "typescript-service-template",
+  "name": "api-dsm-4-parametros",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -17,16 +17,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Vulture-API/typescript-service-template.git"
+    "url": "git+https://github.com/Vulture-API/api-dsm-4-parametros.git"
   },
   "keywords": [],
   "author": "Sette0o0",
   "license": "ISC",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/Vulture-API/typescript-service-template/issues"
+    "url": "https://github.com/Vulture-API/api-dsm-4-parametros/issues"
   },
-  "homepage": "https://github.com/Vulture-API/typescript-service-template#readme",
+  "homepage": "https://github.com/Vulture-API/api-dsm-4-parametros#readme",
   "devDependencies": {
     "@eslint/js": "^9.39.5",
     "@types/node": "^26.5.1",

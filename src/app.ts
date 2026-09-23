@@ -8,13 +8,23 @@ import {
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 
+import { database } from "@/config/database.js";
 import { handleError } from "@/errors/error-handler.js";
-import { SensorTypeRepository } from "@/modules/sensor-types/repositories/sensor-type.repository.js";
+import {
+  type SensorTypeRepository,
+  InMemorySensorTypeRepository,
+  PgSensorTypeRepository,
+} from "@/modules/sensor-types/repositories/sensor-type.repository.js";
 import { sensorTypeRoutes } from "@/modules/sensor-types/routes/sensor-types.route.js";
 import { SensorRepository } from "@/modules/sensors/repositories/sensor.repository.js";
 import { sensorRoutes } from "@/modules/sensors/routes/sensors.route.js";
 
-export function buildApp() {
+export interface BuildAppOptions {
+  sensorTypeRepository?: SensorTypeRepository;
+  sensorRepository?: SensorRepository;
+}
+
+export function buildApp(options: BuildAppOptions = {}) {
   const app = Fastify({
     logger: false,
   }).withTypeProvider<ZodTypeProvider>();
@@ -23,10 +33,23 @@ export function buildApp() {
   app.setSerializerCompiler(serializerCompiler);
   app.setErrorHandler(handleError);
 
+  app.addHook("onRequest", async (request, reply) => {
+    reply.header("Access-Control-Allow-Origin", "*");
+    reply.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    reply.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    if (request.method === "OPTIONS") {
+      return reply.status(204).send();
+    }
+  });
+
   app.register(cookie);
 
-  const sensorTypeRepository = new SensorTypeRepository();
-  const sensorRepository = new SensorRepository();
+  const sensorTypeRepository =
+    options.sensorTypeRepository ??
+    (process.env.NODE_ENV === "test"
+      ? new InMemorySensorTypeRepository()
+      : new PgSensorTypeRepository(database));
+  const sensorRepository = options.sensorRepository ?? new SensorRepository();
 
   app.register(sensorTypeRoutes, {
     prefix: "/sensor-types",
