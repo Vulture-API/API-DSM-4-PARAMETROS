@@ -8,7 +8,10 @@ export interface SensorTypeRepository {
   findAll(): Promise<SensorType[]>;
   findById(id: number): Promise<SensorType | null>;
   findByName(name: string): Promise<SensorType | null>;
-  update(id: number, data: Partial<Omit<SensorType, "id">>): Promise<SensorType | null>;
+  update(
+    id: number,
+    data: Partial<Omit<SensorType, "id">>,
+  ): Promise<SensorType | null>;
   delete(id: number): Promise<boolean>;
 }
 
@@ -156,7 +159,10 @@ export class PgSensorTypeRepository implements SensorTypeRepository {
     return result.rows[0] ?? null;
   }
 
-  async update(id: number, data: Partial<Omit<SensorType, "id">>): Promise<SensorType | null> {
+  async update(
+    id: number,
+    data: Partial<Omit<SensorType, "id">>,
+  ): Promise<SensorType | null> {
     await this.ensureTable();
     const existing = await this.findById(id);
     if (!existing) {
@@ -197,4 +203,3 @@ export class PgSensorTypeRepository implements SensorTypeRepository {
 
 /** Fallback compatível para construtor direto */
 export const SensorTypeRepository = InMemorySensorTypeRepository;
-
