@@ -7,7 +7,9 @@ const environmentSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   PORT: z.coerce.number().int().positive().default(3001),
-  DATABASE_URL: z.string(),
+  DATABASE_URL: z
+    .string()
+    .default("postgresql://postgres:postgres@localhost:5432/vulture"),
 });
 
 const result = environmentSchema.safeParse(process.env);
