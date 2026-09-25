@@ -1,6 +1,7 @@
 import type { Pool } from "pg";
 
 import { database } from "@/config/database.js";
+import { SensorTypeConflictError } from "@/modules/sensor-types/errors/sensor-type-conflict.error.js";
 import type { SensorType } from "@/modules/sensor-types/types/sensor-type.type.js";
 
 export interface SensorTypeRepository {
@@ -192,12 +193,22 @@ export class PgSensorTypeRepository implements SensorTypeRepository {
 
   async delete(id: number): Promise<boolean> {
     await this.ensureTable();
-    const result = await this.pool.query(
-      `DELETE FROM sensor_types WHERE id = $1`,
-      [id],
-    );
+    try {
+      const result = await this.pool.query(
+        `DELETE FROM sensor_types WHERE id = $1`,
+        [id],
+      );
 
-    return (result.rowCount ?? 0) > 0;
+      return (result.rowCount ?? 0) > 0;
+    } catch (error) {
+      // sensors.sensor_type_id é ON DELETE RESTRICT: sem isso virava 500.
+      if ((error as { code?: string }).code === "23503") {
+        throw new SensorTypeConflictError(
+          "Cannot delete sensor type associated with existing sensors (ON DELETE RESTRICT).",
+        );
+      }
+      throw error;
+    }
   }
 }
 
