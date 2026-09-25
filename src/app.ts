@@ -16,7 +16,11 @@ import {
   type SensorTypeRepository,
 } from "@/modules/sensor-types/repositories/sensor-type.repository.js";
 import { sensorTypeRoutes } from "@/modules/sensor-types/routes/sensor-types.route.js";
-import { SensorRepository } from "@/modules/sensors/repositories/sensor.repository.js";
+import {
+  InMemorySensorRepository,
+  PgSensorRepository,
+  type SensorRepository,
+} from "@/modules/sensors/repositories/sensor.repository.js";
 import { sensorRoutes } from "@/modules/sensors/routes/sensors.route.js";
 
 export interface BuildAppOptions {
@@ -52,7 +56,11 @@ export function buildApp(options: BuildAppOptions = {}) {
     (process.env.NODE_ENV === "test"
       ? new InMemorySensorTypeRepository()
       : new PgSensorTypeRepository(database));
-  const sensorRepository = options.sensorRepository ?? new SensorRepository();
+  const sensorRepository =
+    options.sensorRepository ??
+    (process.env.NODE_ENV === "test"
+      ? new InMemorySensorRepository()
+      : new PgSensorRepository(database));
 
   app.register(sensorTypeRoutes, {
     prefix: "/sensor-types",
