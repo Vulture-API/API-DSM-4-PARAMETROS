@@ -2,7 +2,10 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { idPathSchema } from "@/common/pagination.schema.js";
 import { SensorController } from "@/modules/sensors/controllers/sensor.controller.js";
-import { SensorRepository } from "@/modules/sensors/repositories/sensor.repository.js";
+import {
+  InMemorySensorRepository,
+  type SensorRepository,
+} from "@/modules/sensors/repositories/sensor.repository.js";
 import { listSensorsQuerySchema } from "@/modules/sensors/schemas/list-sensors-query.schema.js";
 import { sensorInputSchema } from "@/modules/sensors/schemas/sensor-input.schema.js";
 import { CreateSensorService } from "@/modules/sensors/services/create-sensor.service.js";
@@ -19,7 +22,7 @@ export const sensorRoutes: FastifyPluginAsyncZod<SensorRouteOptions> = async (
   app,
   opts,
 ) => {
-  const sensorRepository = opts.repository ?? new SensorRepository();
+  const sensorRepository = opts.repository ?? new InMemorySensorRepository();
   const createSensorService = new CreateSensorService(sensorRepository);
   const listSensorsService = new ListSensorsService(sensorRepository);
   const getSensorService = new GetSensorService(sensorRepository);
